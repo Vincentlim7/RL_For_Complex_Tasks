@@ -66,8 +66,10 @@ class Enemy :
         prob_action_list = [proba_i / sum_proba for proba_i in prob_action_list]
         sorted_prob_action_list = sort(prob_action_list)
         draw = random.random
+        proba_sum = 0
         for i in range(len(sorted_prob_action_list)):
-            if draw < sorted_prob_action_list[i]:
+            proba_sum += sorted_prob_action_list[i]
+            if draw < proba_sum:
                 return self.action_list[prob_action_list.index(sorted_prob_action_list[i])]
         
         print("XXXXX Should not happen XXXXX")
@@ -85,30 +87,21 @@ class Enemy :
             Integer list: [a_north, a_south, a_east, a_west]
         """
 
-        x = agent_position[0]
-        y = agent_position[1]
+        vec1 = [self.position[0] - agent_position[0], self.position[1] - agent_position[1]] # Vector pointing from agent position to enemy position
+
+        angle_list = []
+        vec2 = [-1, 0] # North direction
+        angle_list.append(self.findAngle(vec1, vec2))
+        vec2 = [1, 0] # South direction
+        angle_list.append(self.findAngle(vec1, vec2))
+        vec2 = [0, 1] # East direction
+        angle_list.append(self.findAngle(vec1, vec2))
+        vec2 = [0, -1] # West direction
+        angle_list.append(self.findAngle(vec1, vec2))
+
+        return angle_list
         
-        if agent_position[0] < self.position[0]: # Agent is above
-            if agent_position[1] < self.position[1]: # Agent is in the top left corner
-                return
-            elif agent_position[1] == self.position[1]: # Agent is in the same column
-                return [0, 180, 90, 90]
-            elif agent_position[1] > self.position[1]: # Agent is in the top right corner
-                return
-
-        if agent_position[0] == self.position[0]: # Agent is on the same line
-            if agent_position[1] < self.position[1]: # Agent is on the left
-                return [90, 90, 180, 0]
-            elif agent_position[1] == self.position[1]:
-                print("XXXXX Agent and enemy in same cell, should not happen")
-            else: # Agent on the right
-                return [90, 90, 0, 180]
-
-        elif agent_position[0] > self.position[0]: # Agent is below
-            if agent_position[1] < self.position[1]: # Agent is in the bottom left corner
-                return
-            elif agent_position[1] == self.position[1]: # Agent is in the same column
-                return [180, 0, 90, 90]
-            elif agent_position[1] > self.position[1]: # Agent is in the bottom right corner
-                return
-
+    def findAngle(vec1, vec2):
+        angle = math.acos((vec1[0] * vec2[0] + vec1[1] * vec2[1]) / (math.sqrt(vec1[0]**2 + vec1[1]**2) * math.sqrt(vec2[0]**2 + vec2[1]**2)))
+        angle = (angle * 180) / math.pi
+        return angle
