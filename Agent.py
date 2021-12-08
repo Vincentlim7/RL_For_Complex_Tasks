@@ -14,6 +14,9 @@ class Agent:
     def get_symbol(self):
         return self.symbol
 
+    def get_action_list(self):
+        return self.action_list
+
     def set_position(self, new_position: tuple):
         self.position = new_position
 
@@ -22,3 +25,6 @@ class Agent:
 
     def get_energy(self):
         return self.energy
+
+    def set_energy(self, value: int):
+        self.energy = value
