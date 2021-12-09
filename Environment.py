@@ -82,20 +82,27 @@ class Environment :
             return
 
         elif type(individual) == Agent:
-            individual.set_energy(individual.get_energy() - 1)
+            individual.consume_energy()
         
         pos_x, pos_y = individual.get_position()
         if action == "North":
             if pos_x == 0 or self.grid[pos_x - 1][pos_y] == "O":
                 print("Mouvement impossible : Obstacle présent ou sortie de grille")
             else:
+                if self.grid[pos_x -1][pos_y] == "$":
+                    self.agent.add_energy()
+                    self.number_of_foods -= 1
                 self.grid[pos_x][pos_y] = " "
                 individual.set_position((pos_x - 1, pos_y))
+
                 self.grid[pos_x -1][pos_y] = individual.get_symbol()
         elif action == "South":
             if pos_x == 24 or self.grid[pos_x + 1][pos_y] == "O":
                 print("Mouvement impossible : Obstacle présent ou sortie de grille")
             else:
+                if self.grid[pos_x + 1][pos_y] == "$":
+                    self.agent.add_energy()
+                    self.number_of_foods -= 1
                 self.grid[pos_x][pos_y] = " "
                 individual.set_position((pos_x + 1, pos_y))
                 self.grid[pos_x + 1][pos_y] = individual.get_symbol()
@@ -103,6 +110,9 @@ class Environment :
             if pos_y == 24 or self.grid[pos_x][pos_y + 1] == "O":
                 print("Mouvement impossible : Obstacle présent ou sortie de grille")
             else:
+                if self.grid[pos_x][pos_y + 1] == "$":
+                    self.agent.add_energy()
+                    self.number_of_foods -= 1
                 self.grid[pos_x][pos_y] = " "
                 individual.set_position((pos_x, pos_y + 1))
                 self.grid[pos_x][pos_y + 1] = individual.get_symbol()
@@ -110,6 +120,9 @@ class Environment :
             if pos_y == 0 or self.grid[pos_x][pos_y - 1] == "O":
                 print("Mouvement impossible : Obstacle présent ou sortie de grille")
             else:
+                if self.grid[pos_x][pos_y - 1] == "$":
+                    self.agent.add_energy()
+                    self.number_of_foods -= 1
                 self.grid[pos_x][pos_y] = " "
                 individual.set_position((pos_x, pos_y - 1))
                 self.grid[pos_x][pos_y - 1] = individual.get_symbol()
@@ -120,9 +133,10 @@ class Environment :
         self.initialize_grid()
         action_list = self.agent.get_action_list()
         print("Deplacement avec les touches ZQSD, C pour quitter")
-        while(True):
+        while(self.number_of_foods > 0):
             print("----------------------------")
             print('\n'.join(''.join(str(x) for x in row) for row in self.grid))
+            print("Energie restante : ", self.agent.get_energy())
             action = input("Enter a name: ")
             if(action == "c"):
                 break

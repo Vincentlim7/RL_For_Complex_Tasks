@@ -26,5 +26,8 @@ class Agent:
     def get_energy(self):
         return self.energy
 
-    def set_energy(self, value: int):
-        self.energy = value
+    def add_energy(self):
+        self.energy += 15
+
+    def consume_energy(self):
+        self.energy -= 1
