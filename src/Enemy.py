@@ -2,31 +2,17 @@ import random
 import math
 
 class Enemy :
-    symbol = "E"
-    action_list = ["North", "South", "East", "West"]
-
-    def get_symbol(self):
-        return Enemy.symbol
 
     def __init__(self, id: int):
         self.id = id
+        self.symbol = "E"
+        self.action_list = ["North", "South", "East", "West"]
         self.position = None
-        
-        
-    def get_id(self):
-        return self.id
-    
+        self.verbose = False
 
-        
-    def set_position(self, new_position: tuple):
-        self.position = new_position
-        
-    def get_position(self):
-        return self.position
-        
-    def next_action(self, agent_position: tuple, surroundings: list):
+    def choose_action(self, agent_position: tuple, surroundings: list):
         """
-        Return the next action of the enemy, as defined by Appendix A of the paper
+        Return the next action of the enemy, as defined by Appendix A of the paper, page 28-29
 
         Args:
             agent_position (tuple): Current position of the agent
@@ -36,9 +22,10 @@ class Enemy :
             String: Next action of the enemy
         """
 
-        # The enemy will not move with a 20% chance
+        # The enemy will not move with a 20% probability
         if random.random() < 0.2:
-            print("Enemy ", self.id, " at ", self.position, " : Stay")
+            if self.verbose:
+                print("Enemy ", self.id, " at ", self.position, " - Action taken : Stay")
             return "Stay"
 
         # Probability of moving in a direction [p_north, p_south, p_east_, p_west]
@@ -54,11 +41,10 @@ class Enemy :
 
             # Compute Manhattan distance
             dist = abs(agent_position[0] - self.position[0]) + abs(agent_position[1] - self.position[1])
-            print("MANHATTAN DIST : ", dist)
 
             if dist <= 4:
                 t_dist = 15 - dist
-            elif dist <=15:
+            elif dist <= 15:
                 t_dist = 9 - (dist / 2)
             else:
                 t_dist = 1
@@ -67,19 +53,18 @@ class Enemy :
 
         sum_proba = sum(prob_action_list)
         prob_action_list = [proba_i / sum_proba for proba_i in prob_action_list]
-        print("PROBA DES ACTIONS DE ENEMY : " , prob_action_list)
         sorted_prob_action_list = sorted(prob_action_list)
         draw = random.random()
         proba_sum = 0
         for i in range(len(sorted_prob_action_list)):
             proba_sum += sorted_prob_action_list[i]
             if draw < proba_sum:
-                print("ENEMY, SORTED PROBA : ", sorted_prob_action_list)
-                print("ENEMY, VALUE OF DRAW : ", draw)
-                print("ENEMY, ACTION TAKEN : ", self.action_list[prob_action_list.index(sorted_prob_action_list[i])])
+                if self.verbose:
+                    print("Enemy ", self.id, " at ", self.position, " - Proba of actions : ", prob_action_list)
+                    print("Enemy ", self.id, " at ", self.position, " - Action taken : ", self.action_list[prob_action_list.index(sorted_prob_action_list[i])])
                 return self.action_list[prob_action_list.index(sorted_prob_action_list[i])]
         
-        print("XXXXX Should not happen XXXXX")
+        print("Enemy choose_action() : no action returned, should not happen")
 
 
     def compute_angles(self, agent_position: tuple):
@@ -105,11 +90,31 @@ class Enemy :
         angle_list.append(self.findAngle(vec1, vec2))
         vec2 = [0, 1] # West direction
         angle_list.append(self.findAngle(vec1, vec2))
-        print("ANGLE LIST :" , angle_list)
-
         return angle_list
         
     def findAngle(self, vec1, vec2):
+        """
+        Compute the angle between two 2D vectors
+
+        Args:
+            vec1 (tuple<int>): Vector representing the direction between the considered enemy and the agent
+            vec2 (tuple<int>): Vector representing the considered move direction
+
+        Returns:
+            [float]: Angle value between the two vectors
+        """
         angle = math.acos((vec1[0] * vec2[0] + vec1[1] * vec2[1]) / (math.sqrt(vec1[0]**2 + vec1[1]**2) * math.sqrt(vec2[0]**2 + vec2[1]**2)))
         angle = (angle * 180) / math.pi
         return angle
+
+    def get_id(self):
+        return self.id
+
+    def get_symbol(self):
+        return self.symbol
+
+    def set_position(self, new_position: tuple):
+        self.position = new_position
+
+    def get_position(self):
+        return self.position
