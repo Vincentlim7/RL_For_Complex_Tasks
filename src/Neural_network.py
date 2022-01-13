@@ -29,7 +29,7 @@ class Neural_network:
             self.weighted_sums.append([])
             self.weighted_variations.append([])
             for j in range(self.nb_neurons_per_layers[i + 1]):
-                self.weights[i].append([random.uniform(-0.05, 0.05) for k in range(self.nb_neurons_per_layers[i])]) # The range of random initial weights of networks fixed to be 0.1 (page 18)
+                self.weights[i].append([random.uniform(-0.05, 0.05) for k in range(self.nb_neurons_per_layers[i])])
                 self.values[i + 1].append(0)
                 self.weighted_sums[i].append(0)
                 self.weighted_variations[i].append([0 for k in range(self.nb_neurons_per_layers[i])])

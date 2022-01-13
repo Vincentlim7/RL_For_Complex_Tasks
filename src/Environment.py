@@ -59,8 +59,7 @@ class Environment:
         self.training_mode = True
         self.verbose = False
 
-        # Indicate the end of a simulation
-        self.reset = None
+        self.reset = False
 
         self.initialize_grid()
 
@@ -349,21 +348,6 @@ class Environment:
         # Update the agent's shock input
         self.agent.set_collide(self.agent_collided)
 
-    def update_energy_input(self, agent_energy):
-        """
-        Update the energy level of the agent for the network input
-
-        Args:
-            agent_energy (Integer): energy of the agent
-        """
-        energy_level_input = [0 for _ in range(16)]
-        step_level = self.agent.get_max_energy() / 16
-        if agent_energy == self.agent.get_max_energy():
-            energy_level_input[-1] = 1
-        else:
-            energy_level_input[int(agent_energy // step_level)] = 1
-        self.agent.set_input_energy(energy_level_input)
-
     def update_sensors(self, sensor_type: str, element_to_check: str):
         """
         Update a sensor
@@ -422,6 +406,21 @@ class Environment:
                     list_updated_sensors[i] = 1
                     break
 
+    def update_energy_input(self, agent_energy):
+        """
+        Update the energy level of the agent for the network input
+
+        Args:
+            agent_energy (Integer): energy of the agent
+        """
+        energy_level_input = [0 for _ in range(16)]
+        step_level = self.agent.get_max_energy() / 16
+        if agent_energy == self.agent.get_max_energy():
+            energy_level_input[-1] = 1
+        else:
+            energy_level_input[int(agent_energy // step_level)] = 1
+        self.agent.set_input_energy(energy_level_input)
+
     def get_surroundings(self, enemy: Enemy):
         """
         Compute the observation of the enemy on its 4 adjacent cells
@@ -468,7 +467,7 @@ class Environment:
                 print("---------- Test after {} trainings ---------- ".format(train_nb))
                 self.test_iterations()
                 training_serie_nb += 1
-                self.agent.training_temperature = 1 / self.one_over_temperature_coeff_list[training_serie_nb]
+                self.agent.temperature = 1 / self.one_over_temperature_coeff_list[training_serie_nb]
 
             self.initialize_grid()
             while (self.reset == False):

@@ -60,8 +60,7 @@ class Agent:
         self.discount_factor = 0.9 
 
         self.utility_network = Neural_network()
-        self.training_temperature = 1 / 20  # Initialized and updated in the environment
-        self.test_temperature = 1 / 60  # Temperature for the stochastic selector used in tests
+        self.temperature = 1 / 20
 
         self.verbose = False
 
@@ -242,18 +241,9 @@ class Agent:
         Returns:
             [String]: Action choosen ("North", "South", "East", "West")
         """
-        # *** OPTION A ***: Stochastic action selector only during training
-        T = self.training_temperature
-
-        # *** OPTION B ***: Stochastic action selector used for training AND tests
-        # if training_mode == True:
-        #     T = self.training_temperature
-        # else:
-        #     T = self.test_temperature
-
         prob_action_list = {}
         for action in self.action_list:
-            prob_action_list[action] = math.exp(output_dict[action] / T)
+            prob_action_list[action] = math.exp(output_dict[action] / self.temperature)
         somme = sum(prob_action_list.values())
         for action in self.action_list:
             prob_action_list[action] /= somme
